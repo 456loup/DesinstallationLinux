@@ -1,7 +1,8 @@
 #include <stdio.h> 
 #include <stdlib.h> 
+#include <string.h> 
 #include "manipulationPaquet.h" 
-
+#include "recupererPaquet.h" 
 
 void testAjout(){
 
@@ -20,7 +21,6 @@ void testAjout(){
     ajouterPaquetReverse(parent , enfant2); 
     ajouterPaquetReverse(enfant1 , enfant11);
     
-    printf(" bordel %s " , parent->reverseDep[0]->nomPaquetCourant); 
     afficherDependanceInversePaquet(parent); 
 
 }
@@ -143,12 +143,109 @@ void testDressageListeSuppression(){
 
 }
 
-int main(void){
+void testStrnCat(){
 
-    //testAjout(); 
-    //testDoublon(); 
-    //testAjouterListeChar(); 
-    testDressageListeSuppression(); 
+
+    char truc1[50] = " bidule " ; 
+    char bidule[50] = " autre " ; 
+
+    strncat(truc1 , bidule   , 45 ); 
+
+    printf(" %s " , truc1); 
 
 }
 
+
+void testRetPaquet(){
+
+    Paquet *parent = testRetourPaquet("daron"); 
+    printf(" le nom du paquet parent : %s " , parent->nomPaquetCourant);
+    printf(" ses enfants sont %s et %s " , parent->reverseDep[0]->nomPaquetCourant , parent->reverseDep[1]->nomPaquetCourant);
+
+     
+}
+
+void testCreationArborescenceNiveau1(){
+
+    char chainePaquetParent[50] = "zerofree"; 
+   // Paquet *parent = ajouterToutesLesRdependsDirectes(chainePaquetParent); 
+
+    //afficherDependanceInversePaquet(parent); 
+
+}
+
+
+
+void testCreationPaquet(){
+
+    char *chaine = calloc(100 , sizeof(char)); 
+    Paquet **tabPointeur = calloc(2 , sizeof(void*)); 
+
+    tabPointeur[0] = creationPaquet( "bordel"); 
+    tabPointeur[1] = creationPaquet( "autre");  
+
+    for(int i = 0 ; i < 2 ; i++){
+        printf("\n les deux noms %s " , tabPointeur[i]->nomPaquetCourant); 
+    }
+}
+
+void testCopieValeurChaine(){
+
+
+   Paquet **listePaquet = calloc(2 , sizeof(void*)); 
+   listePaquet[0] = calloc(1 , sizeof(Paquet)); 
+   listePaquet[1] = calloc(1 , sizeof(Paquet));
+
+   char chaine[100] = "COMPRIS?" ;
+   listePaquet[0]->nomPaquetCourant =  copierValeurChaine(chaine , 100); 
+   strcpy(chaine , "trucmuche"); 
+   listePaquet[1]->nomPaquetCourant =  copierValeurChaine(chaine , 100); 
+   
+   printf(" truc %s autre %s " , listePaquet[0]->nomPaquetCourant , listePaquet[1]->nomPaquetCourant); 
+
+}
+
+
+void testRdepDirectes(){
+
+    Paquet *parent = creationPaquet("zerofree");          
+    ajouterToutesLesRdependsDirectes(parent);
+    afficherDependanceInversePaquet(parent); 
+}
+
+
+void testArborescence(){
+
+    int tailleListe = 0; 
+    char **chaine = NULL;  
+    Paquet *parent = creationPaquet("zerofree"); 
+    dresserArborescencePaquet(parent , &chaine , &tailleListe);     
+    afficherTableauChar(chaine , tailleListe); 
+
+
+}
+
+int main(void){
+
+    // testAjout(); 
+    //testDoublon(); 
+    //testAjouterListeChar(); 
+    //testDressageListeSuppression(); 
+    
+    //system("../scriptBash/auxiliaireBash.sh zerofree"); 
+
+    //testRetPaquet(); 
+    //testCreationArborescenceNiveau1(); 
+    
+	
+    //char chaine[50] = "sanAndreas"; 
+    //testChaineChar(chaine);   
+    
+    //testCreationPaquet(); 
+    //testCopieValeurChaine(); 
+
+
+    //testRdepDirectes(); 
+    testArborescence(); 
+}
+ 

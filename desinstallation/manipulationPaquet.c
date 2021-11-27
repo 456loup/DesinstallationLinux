@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h> 
 #include <string.h> 
@@ -6,6 +5,17 @@
 
 
 /* Bloc des fonctions auxiliaires (elles n utilisent rien d autre qu elle même     */
+
+void afficherRdependsDirectes(Paquet *parent){
+
+    printf(" \n AFFICHAGE DES RDEPENDS DU PAQUET %s ---------------- \n " , parent->nomPaquetCourant); 
+    for(int i = 0 ; i < parent->nombrePaquetDependant ; i++){ 
+        printf(" \n element %d du paquet %s vaut %s " , i , parent->nomPaquetCourant , parent->reverseDep[i]->nomPaquetCourant); 
+    }
+    printf(" \n -------------------------- FIN AFFICHAGE DES RDEPENDS DU PAQUET %s ---------------------- \n\n" , parent->nomPaquetCourant); 
+}
+
+
 
 void afficherTableauChar(char **listeChar , int tailleChaine){
     
@@ -39,20 +49,19 @@ void initialiserPaquet(Paquet *parent , char *nomPaquet , char *Priorite){
 
 void ajouterPaquetAPaquet(Paquet *parent , Paquet *paquetARajouter){
 
-
-      Paquet  **listePaquetTransition = calloc(parent->nombrePaquetDependant , sizeof(void*)); 
+      Paquet  **listePaquetTransition = calloc(parent->nombrePaquetDependant , sizeof(void*));
+      
       int i = 0;
       for(i = 0 ; i < parent->nombrePaquetDependant ; i++){
-          listePaquetTransition[i] = parent->reverseDep[i]; 
+          listePaquetTransition[i] = parent->reverseDep[i];
       }
       parent->nombrePaquetDependant += 1;
       parent->reverseDep = calloc(parent->nombrePaquetDependant , sizeof(void*)); 
 
       for(i = 0 ; i < parent->nombrePaquetDependant-1 ; i++){
           parent->reverseDep[i] =  listePaquetTransition[i];
-	  printf(" je te hais %s " ,  parent->reverseDep[i]->nomPaquetCourant); 
       }
-      parent->reverseDep[i] = paquetARajouter; 
+      parent->reverseDep[i] = paquetARajouter;
 }
 
 /* 
@@ -66,6 +75,7 @@ void ajouterPaquetAPaquet(Paquet *parent , Paquet *paquetARajouter){
 
 void ajouterElementAListeChar(char ***listeChar , char *chaineACopier , int *tailleChaine){
 
+    
     char **transition = calloc(*tailleChaine , sizeof(void*)); 
     int i = 0; 
 
@@ -119,13 +129,14 @@ int chaineDejaPresenteDansLeTableauDeChar( char **tableauChaine , char *chaineAV
  * */
 void ajouterPaquetReverse ( Paquet *parent , Paquet *enfant){
 
+
     if(parent->reverseDep == NULL){
-    
 	parent->reverseDep = calloc(1 , sizeof(void*)); 
-        parent->reverseDep[0] = enfant; 	
+        parent->reverseDep[0] = enfant;
         parent->nombrePaquetDependant = 1; 
     }else{
-        ajouterPaquetAPaquet(parent , enfant) ;  
+        ajouterPaquetAPaquet(parent , enfant) ; 
+        	
     }
 
 }
@@ -169,21 +180,15 @@ void dresserListePaquetASupprimer(char ***chaine , int *tailleChaine , Paquet *p
     int i = 0; 
     if( (*chaine)[0] == NULL){
 	*tailleChaine = 1; 
-        printf(" LA CHAINE ICI  %d " , *tailleChaine); 
 	*chaine = calloc(*tailleChaine , sizeof(void*));
 	(*chaine)[0] = parent->nomPaquetCourant;	
-	
     } 
 
     /* on ajoute les paquets (en allant pas sur les doublons )  */ 
     for(i = 0 ; i < parent->nombrePaquetDependant ; i++){
         if( parent->reverseDep != NULL && chaineDejaPresenteDansLeTableauDeChar(*chaine , parent->reverseDep[i]->nomPaquetCourant , *tailleChaine) != 1  ){
-
             ajouterElementAListeChar(chaine , parent->reverseDep[i]->nomPaquetCourant  , tailleChaine); 
 	    dresserListePaquetASupprimer(chaine , tailleChaine , parent->reverseDep[i]); 
         }	
     }        
-}
-
-
-
+} 
