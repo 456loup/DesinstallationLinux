@@ -214,18 +214,52 @@ void testRdepDirectes(){
 }
 
 
-void testArborescence(){
+void testArborescence(char nomPaquet[]){
 
     int tailleListe = 0; 
-    char **chaine = NULL;  
-    Paquet *parent = creationPaquet("zerofree"); 
+    char **chaine = NULL; 
+    printf(" PAQUET ENTRE %s " , nomPaquet);  
+    Paquet *parent = creationPaquet(nomPaquet); 
     dresserArborescencePaquet(parent , &chaine , &tailleListe);     
-    afficherTableauChar(chaine , tailleListe); 
+    afficherTableauChar(chaine , tailleListe);
+}
+
+void testRecupererPriorite(char nom[]){
+
+   Paquet *paquet = creationPaquet(nom); 
+   paquet->Priorite =  recupererPriorite(nom); 
+   printf(" la priorite du paquet %s vaut %s " , paquet->nomPaquetCourant , paquet->Priorite); 
+
+}
+
+void testPaquetInstalleOuPas(char nom[]){
+
+    
+    int retour = cePaquetEstIlInstalle(nom); 
+    if(retour != 0){
+        printf(" ce paquet n est pas  installe  "); 
+    }else{
+        printf(" ce paquet est installe  %d " , retour); 
+    }
 
 
 }
 
-int main(void){
+
+void testArborescenceFinale(char nom[]){
+
+
+    int tailleListe = 0; 
+    char **chaine = NULL; 
+    Paquet *parent = creationPaquet(nom); 
+    dresserArborescenceFinale(parent , &chaine , &tailleListe);     
+    afficherTableauChar(chaine , tailleListe);
+
+
+}
+
+
+int main(int argc , char **argv){
 
     // testAjout(); 
     //testDoublon(); 
@@ -246,6 +280,11 @@ int main(void){
 
 
     //testRdepDirectes(); 
-    testArborescence(); 
+    //testArborescence(argv[1]);
+    
+    //testRecupererPriorite(argv[1]);
+    //testPaquetInstalleOuPas(argv[1]);  
+
+    testArborescenceFinale(argv[1]); 
 }
  

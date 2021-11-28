@@ -3,7 +3,8 @@
 #include <string.h>
 #include "manipulationPaquet.h"
 #include "recupererPaquet.h"
-#define FICHIER "rdep.txt"
+#define FICHIER "depForte.txt"
+#define FICHIERPRIORITE "priorite.txt"
 #define  TAILLE_CHAINE_CARAC 300
 
 
@@ -49,10 +50,27 @@ char * copierValeurChaine( char chaineACopier[] , int tailleChaine ){
 }
 
 Paquet * creationPaquet( char  nom[] ){
+        
+	 
 	Paquet *paquet = calloc(1 , sizeof(Paquet));
+	paquet->Priorite = recupererPriorite(nom); 
 	paquet->nomPaquetCourant = copierValeurChaine(nom , TAILLE_CHAINE_CARAC);
 	return paquet; 
 }
+
+char * recupererPriorite(char nom[]){
+
+
+    char commande[TAILLE_CHAINE_CARAC] = "../scriptBash/recupererPriorite.sh "; 
+    char *retour = calloc(TAILLE_CHAINE_CARAC , sizeof(char) ) ; 
+    strcat(commande , nom); 
+    system(commande);
+    FILE *fichier = fopen(FICHIERPRIORITE , "r");
+    fgets(retour , TAILLE_CHAINE_CARAC-5 , fichier);  
+    return retour; 
+
+}
+
 
 /*
  * Creation arborescence niveau 1 
@@ -62,7 +80,7 @@ Paquet * creationPaquet( char  nom[] ){
 void ajouterToutesLesRdependsDirectes(Paquet *parent){
 
    /* definition des parametre de la commande  */ 
-   char chaine1[TAILLE_CHAINE_CARAC] = "../scriptBash/auxiliaireBash.sh ";  
+   char chaine1[TAILLE_CHAINE_CARAC] = "../scriptBash/recupererDependanceForte.sh ";  
    char chaine2[TAILLE_CHAINE_CARAC];
    char lecture[TAILLE_CHAINE_CARAC]; 
    int i = 0;  
@@ -77,20 +95,32 @@ void ajouterToutesLesRdependsDirectes(Paquet *parent){
    }   
 }
 
+int cePaquetEstIlInstalle(char nom[]){
+
+    char commande[TAILLE_CHAINE_CARAC] = "../scriptBash/paquetInstalle.sh "; 
+    strcat(commande , nom); 
+    return system(commande); 
+} 
+
+
+/* LA FONCTION FINALE   */
 
 void dresserArborescencePaquet(Paquet *parent , char ***chaineSuppression , int *tailleListe){
 
-    if(*tailleListe < 1000){
+
     	int i = 0; 
     	int paquetPresent = 0;
+	int paquetInstalle = 0; 
     	int sauvegardeTailleListe = *tailleListe;  
     	Paquet *temp = creationPaquet(parent->nomPaquetCourant);
     	ajouterToutesLesRdependsDirectes(temp);
 
 
     	for(i = 0 ; i < temp->nombrePaquetDependant ; i++){
-        	paquetPresent = chaineDejaPresenteDansLeTableauDeChar(*chaineSuppression , temp->reverseDep[i]->nomPaquetCourant , *tailleListe); 
-        	if(paquetPresent != 1){
+        	paquetPresent = chaineDejaPresenteDansLeTableauDeChar(*chaineSuppression , temp->reverseDep[i]->nomPaquetCourant , *tailleListe);
+	        paquetInstalle = cePaquetEstIlInstalle(temp->reverseDep[i]->nomPaquetCourant); 	
+        	if(paquetPresent != 1 && paquetInstalle == 0){
+			printf(" \n\n LE PAQUET %s est INSTALLE " , temp->reverseDep[i]->nomPaquetCourant); 
 	    		ajouterPaquetReverse(parent , temp->reverseDep[i]);
 	    		ajouterElementAListeChar(chaineSuppression , temp->reverseDep[i]->nomPaquetCourant , tailleListe); 	    
 		}	 	
@@ -102,11 +132,15 @@ void dresserArborescencePaquet(Paquet *parent , char ***chaineSuppression , int 
 	    		dresserArborescencePaquet(parent->reverseDep[i] , chaineSuppression , tailleListe);  	     
 		}
     	}
-    }
 }
 
 
+void dresserArborescenceFinale(Paquet *parent , char ***chaineSuppression , int *tailleListe){
 
+
+	ajouterElementAListeChar(chaineSuppression , parent->nomPaquetCourant , tailleListe);
+        dresserArborescencePaquet(parent , chaineSuppression , tailleListe); 	
+}
 
 
 
@@ -122,7 +156,7 @@ void testChaineChar (char truc[]){
 
    
     char chaine2[TAILLE_CHAINE_CARAC] = " ARARAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"; 
-    char chaine3[TAILLE_CHAINE_CARAC] = " DEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEL"; 
+    char chaine3[TAILLE_CHAINE_CARAC] = " BORDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEL"; 
     strcpy(chaineLocal , chaine2); 
     printf(" chaineLocal %s : et sa taille est de  %d  " , chaineLocal , strlen(chaineLocal)); 
 
@@ -131,3 +165,7 @@ void testChaineChar (char truc[]){
     printf(" la chaine final : %s " , chaineLocal);  
 
 }
+
+
+
+ 

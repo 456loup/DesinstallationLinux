@@ -30,4 +30,7 @@ void ajouterElementAListeChar(char ***listeChar , char *chaineACopier , int *tai
 
 void afficherTableauChar(char **listeChar , int tailleChaine); 
 
-#endif 
+
+
+
+#endif  

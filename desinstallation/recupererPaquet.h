@@ -17,4 +17,13 @@ void dresserArborescencePaquet(Paquet *parent , char ***chaine , int *tailleList
 
 void ajouterToutesLesRdependsDirectes(Paquet *parent);
 
+char * recupererPriorite(char nom[]);
+
+int cePaquetEstIlInstalle(char nom[]);
+
+
+
+void dresserArborescenceFinale(Paquet *parent , char ***chaine , int *tailleListe); 
+
 #endif 
+ 
